@@ -83,3 +83,5 @@ CACHE
 .ipynb_checkpoints/
 src/scripts
 src/video_composer/media/*
+
+frames/*.jpg
