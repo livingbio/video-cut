@@ -28,6 +28,20 @@ def get_best_scene(scene_list, text):
 
 
 def generate_scenes(text_list, filename='default.mp4', threshold=0.6):
+    """Return corresponding scenes from input text and video
+
+    :param text_list: A list of text for scene generation
+    :param filename: Video file
+    :param threshold: A tunable threshold of scene cut
+
+    :type text_list: list
+    :type filename: str
+    :type threshold: float
+
+    :return: A dictionary for result scene generation and all scenes for the input video
+    :rtype: dict
+    """
+
     scene_list = cut.cut_scenes(filename, threshold)
     result = []
 
