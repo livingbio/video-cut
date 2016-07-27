@@ -11,9 +11,43 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
+def get_frames(filename):
+    scene_list = []
+    pattern = re.compile(r"Duration: (?P<duration>\d+:\d+:\d+.\d+)")
+    duration_seconds = 0.0
+
+    command = [
+        "ffmpeg",
+        '-y',
+        "-i", filename,
+        "-vframes", "1",
+        "frames/{0}.000001.jpg".format(basename(filename)),
+    ]
+    proc = subprocess.Popen(
+        command, stdin=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    proc.wait()
+
+    for line in proc.communicate()[1].split('\n'):
+        match = pattern.search(line)
+        if match:
+            duration = match.groups()[0]
+            duration_seconds = sum(float(x) * 60 ** i for i, x in enumerate(reversed(duration.split(":"))))
+
+    scene_list.append({
+        'from_ts': 0.0,
+        'to_ts': duration_seconds,
+        'image': "frames/{0}.000001.jpg".format(basename(filename)),
+        'duration': duration_seconds,
+    })
+
+    return scene_list
+
+
 def cut_scenes(filename='default.mp4', threshold=0.6):
     command = [
         "ffmpeg",
+        '-y',
         "-i", filename,
         "-filter", "select='gt(scene,{0})',showinfo".format(threshold),
         "-vsync", "0",
@@ -53,6 +87,9 @@ def cut_scenes(filename='default.mp4', threshold=0.6):
 
     logger.info("End of running ffmpeg")
     logger.debug(scene_list)
+
+    if not scene_list:
+        scene_list = get_frames(filename)
 
     return scene_list
 
