@@ -6,7 +6,15 @@ This package tries to generate scene list and the corresponding scene from input
 
 You should have ffmpeg in your environment
 
-usage:
+### MAC
+
+    brew install ffmpeg
+
+### ubuntu
+
+    sudo apt-get install ffmpeg
+
+### usage
 
 ```python
 import generate_scenes
